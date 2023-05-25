@@ -1,13 +1,18 @@
 package com.journal;
 
-/**
- * Hello world!
- *
- */
+import com.journal.model.Entry;
+import com.journal.repository.EntryDao;
+
 public class App 
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        EntryDao entryDao = new EntryDao();
+//
+//        Entry test = new Entry("testEntry");
+//
+//        entryDao.create(test);
+
+        entryDao.delete(5);
     }
 }

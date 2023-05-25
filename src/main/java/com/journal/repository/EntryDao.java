@@ -27,7 +27,7 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
 
                 if(rset.next()) {
                     resEntry.setId(rset.getLong("id"));
-                    resEntry.setWhenCreated(rset.getDate("whenCreated"));
+                    resEntry.setWhenCreated(rset.getTimestamp("whenCreated"));
                     resEntry.setEntryText(rset.getString("entryText"));
                 }
 
@@ -56,7 +56,7 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
                 while(rset.next()) {
                     Entry resEntry = new Entry();
                     resEntry.setId(rset.getLong("id"));
-                    resEntry.setWhenCreated(rset.getDate("whenCreated"));
+                    resEntry.setWhenCreated(rset.getTimestamp("whenCreated"));
                     resEntry.setEntryText(rset.getString("entryText"));
 
                     entries.add(resEntry);
@@ -96,7 +96,7 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
                 Connection con = getConnection();
                 PreparedStatement prepStmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ) {
-            prepStmt.setDate(1, entry.getWhenCreated());
+            prepStmt.setTimestamp(1, new Timestamp(entry.getWhenCreated()));
             prepStmt.setString(2, entry.getEntryText());
 
             prepStmt.executeUpdate();
@@ -125,6 +125,25 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
                 PreparedStatement prepStmt = con.prepareStatement(sql)
                 ) {
             prepStmt.setLong(1, entry.getId());
+
+            rowsAffected = prepStmt.executeUpdate();
+        }
+        catch(SQLException sqe) {
+            sqe.printStackTrace();
+        }
+
+        return rowsAffected;
+    }
+
+    public int delete(int entryId) {
+        String sql = "delete from entry where id = ?";
+        int rowsAffected = 0;
+
+        try (
+                Connection con = getConnection();
+                PreparedStatement prepStmt = con.prepareStatement(sql)
+        ) {
+            prepStmt.setLong(1, entryId);
 
             rowsAffected = prepStmt.executeUpdate();
         }
