@@ -12,7 +12,7 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
     @Override
     public Optional<Entry> findById(long id) {
         Optional<Entry> entry = Optional.empty();
-        String sql = "select id, entryText from entry where id = ?";
+        String sql = "select id, entryText, idUser from entry where id = ?";
 
         try (
                 Connection con = getConnection();
@@ -29,6 +29,7 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
                     resEntry.setId(rset.getLong("id"));
                     resEntry.setWhenCreated(rset.getTimestamp("whenCreated"));
                     resEntry.setEntryText(rset.getString("entryText"));
+                    resEntry.setIdUser(rset.getLong("idUser"));
                 }
 
                 entry = Optional.of(resEntry);
@@ -90,7 +91,7 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
 
     @Override
     public Entry create(Entry entry) {
-        String sql = "insert into entry (whenCreated, entryText) values (?, ?)";
+        String sql = "insert into entry (whenCreated, entryText, idUser) values (?, ?, ?)";
 
         try (
                 Connection con = getConnection();
@@ -98,6 +99,7 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
                 ) {
             prepStmt.setTimestamp(1, new Timestamp(entry.getWhenCreated()));
             prepStmt.setString(2, entry.getEntryText());
+            prepStmt.setLong(3, entry.getIdUser());
 
             prepStmt.executeUpdate();
 

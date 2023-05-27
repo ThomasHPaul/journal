@@ -109,7 +109,7 @@ public class UserDao extends AbstractDao implements Dao<User> {
 
         try (
                 Connection con = getConnection();
-                PreparedStatement prepStmt = con.prepareStatement(sql);
+                PreparedStatement prepStmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ) {
             prepStmt.setString(1, user.getUsername());
             prepStmt.setString(2, user.getPassword());
@@ -153,6 +153,35 @@ public class UserDao extends AbstractDao implements Dao<User> {
     }
 
     public User getUserByUsernameAndPassword(String username, String password) {
-        // TODO: implement
+        String sql = "select idUser, username, password, email, firstName, lastName from user where username = ? and password = ?";
+        User user = new User();
+        try (
+                Connection con = getConnection();
+                PreparedStatement prepStmt = con.prepareStatement(sql);
+                ) {
+            prepStmt.setString(1, username);
+            prepStmt.setString(2, password);
+
+            try (
+                    ResultSet rset = prepStmt.executeQuery();
+                    ) {
+                if(rset.next()) {
+                    User resUser = new User(
+                            rset.getLong("idUser"),
+                            rset.getString("username"),
+                            rset.getString("password"),
+                            rset.getString("email"),
+                            rset.getString("firstName"),
+                            rset.getString("lastName")
+                    );
+
+                    user = resUser;
+                }
+            }
+        }
+        catch(SQLException sqe) {
+            sqe.printStackTrace();
+        }
+        return user;
     }
 }
