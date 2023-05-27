@@ -8,11 +8,11 @@ public class App
     public static void main( String[] args )
     {
         EntryDao entryDao = new EntryDao();
-//
-//        Entry test = new Entry("testEntry");
-//
-//        entryDao.create(test);
 
-        entryDao.delete(5);
+        Entry test = new Entry("testEntry");
+
+        entryDao.create(test);
+
+//        entryDao.delete();
     }
 }
