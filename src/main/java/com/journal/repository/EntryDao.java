@@ -111,6 +111,9 @@ public class EntryDao extends AbstractDao implements Dao<Entry> {
                 }
             }
         }
+        catch(SQLIntegrityConstraintViolationException sic) {
+            System.out.println("Username password combination not present on the database. Please correct or make a new user.");
+        }
         catch(SQLException sqe) {
             sqe.printStackTrace();
         }
