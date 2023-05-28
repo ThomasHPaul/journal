@@ -1,8 +1,9 @@
-package com.journal.model;
+package com.journal.utils;
 
+import com.journal.model.User;
 import com.journal.repository.UserDao;
 
-public class Session {
+public class SessionUtil {
     private User userLoggedIn;
     private boolean someoneLoggedIn = false;
 
@@ -10,7 +11,7 @@ public class Session {
         return userLoggedIn.getIdUser();
     }
 
-    public Session(UserDao userDao, String username, String password) {
+    public SessionUtil(UserDao userDao, String username, String password) {
         userLoggedIn = userDao.getUserByUsernameAndPassword(username, password);
         someoneLoggedIn = true;
     }

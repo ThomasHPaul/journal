@@ -1,7 +1,9 @@
 package com.journal;
 
 import com.journal.model.Entry;
-import com.journal.model.Session;
+import com.journal.model.User;
+import com.journal.utils.PasswordUtil;
+import com.journal.utils.SessionUtil;
 import com.journal.repository.EntryDao;
 import com.journal.repository.UserDao;
 
@@ -11,12 +13,11 @@ public class App {
 
         EntryDao entryDao = new EntryDao();
         UserDao userDao = new UserDao();
+        SessionUtil session = new SessionUtil(userDao,"secureDude", "password");
 
-        Session session = new Session(userDao,"test", "password");
-//        User user = new User("tpaul", "password", "tpaul@tpaul.net", "Thomas", "Paul");
-        Entry test = new Entry("test2", session.userCurrentlyLoggedIn());
-
-        entryDao.create(test);
+//        Entry test = new Entry("testByRamblinMan", session.userCurrentlyLoggedIn());
+//
+//        entryDao.create(test);
 
 //        entryDao.delete();
     }

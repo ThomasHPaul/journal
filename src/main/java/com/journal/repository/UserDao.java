@@ -1,6 +1,7 @@
 package com.journal.repository;
 
 import com.journal.model.User;
+import com.journal.utils.PasswordUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -105,17 +106,20 @@ public class UserDao extends AbstractDao implements Dao<User> {
 
     @Override
     public User create(User user) {
-        String sql = "insert into User (username, password, email, firstName, lastName) values (?, ?, ?, ?, ?)";
+        String sql = "insert into User (username, password, email, firstName, lastName, salt) values (?, ?, ?, ?, ?, ?)";
 
         try (
                 Connection con = getConnection();
                 PreparedStatement prepStmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ) {
+            String salt = PasswordUtil.generateSalt(512).get();
+
             prepStmt.setString(1, user.getUsername());
-            prepStmt.setString(2, user.getPassword());
+            prepStmt.setString(2, PasswordUtil.hashPassword(user.getPassword(), salt).get());
             prepStmt.setString(3, user.getEmail());
             prepStmt.setString(4, user.getFirstName());
             prepStmt.setString(5, user.getLastName());
+            prepStmt.setString(6, salt);
 
             prepStmt.executeUpdate();
 
@@ -154,17 +158,18 @@ public class UserDao extends AbstractDao implements Dao<User> {
 
     public User getUserByUsernameAndPassword(String username, String password) {
         String sql = "select idUser, username, password, email, firstName, lastName from user where username = ? and password = ?";
+
         User user = new User();
         try (
                 Connection con = getConnection();
                 PreparedStatement prepStmt = con.prepareStatement(sql);
                 ) {
-            prepStmt.setString(1, username);
-            prepStmt.setString(2, password);
+                prepStmt.setString(1, username);
+                prepStmt.setString(2, getUserPassword(username, password));
 
             try (
                     ResultSet rset = prepStmt.executeQuery();
-                    ) {
+            ) {
                 if(rset.next()) {
                     User resUser = new User(
                             rset.getLong("idUser"),
@@ -174,14 +179,38 @@ public class UserDao extends AbstractDao implements Dao<User> {
                             rset.getString("firstName"),
                             rset.getString("lastName")
                     );
-
                     user = resUser;
                 }
             }
         }
+
         catch(SQLException sqe) {
             sqe.printStackTrace();
         }
         return user;
+    }
+
+    private String getUserPassword(String username, String password) {
+        String saltSql = "select salt from user where username = ?";
+        String userSalt = null;
+
+        try (
+                Connection con = getConnection();
+                PreparedStatement saltStmt = con.prepareStatement(saltSql);
+        ) {
+            saltStmt.setString(1, username);
+
+            try (
+                    ResultSet saltSet = saltStmt.executeQuery();
+            ) {
+                if (saltSet.next()) {
+                    userSalt = saltSet.getString("salt");
+                }
+            }
+        } catch(SQLException sqe) {
+            sqe.printStackTrace();
+        }
+
+        return PasswordUtil.hashPassword(password, userSalt).get();
     }
 }
