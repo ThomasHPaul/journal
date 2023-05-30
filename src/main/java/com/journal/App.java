@@ -1,9 +1,7 @@
 package com.journal;
 
-import com.journal.model.Entry;
-import com.journal.model.User;
-import com.journal.utils.PasswordUtil;
-import com.journal.utils.SessionUtil;
+import com.journal.repository.utils.SessionUtil;
+import com.journal.repository.utils.LoggerUtil;
 import com.journal.repository.EntryDao;
 import com.journal.repository.UserDao;
 
@@ -11,9 +9,13 @@ public class App {
 
     public static void main( String[] args ) {
 
+        LoggerUtil.initLogManager();
+
         EntryDao entryDao = new EntryDao();
         UserDao userDao = new UserDao();
         SessionUtil session = new SessionUtil(userDao,"secureDude", "password");
+
+        session.logout();
 
 //        Entry test = new Entry("testByRamblinMan", session.userCurrentlyLoggedIn());
 //

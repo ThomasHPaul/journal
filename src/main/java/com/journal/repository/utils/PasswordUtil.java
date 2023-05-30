@@ -1,4 +1,4 @@
-package com.journal.utils;
+package com.journal.repository.utils;
 
 import java.security.SecureRandom;
 import java.util.Base64;

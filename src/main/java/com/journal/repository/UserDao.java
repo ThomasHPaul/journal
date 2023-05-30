@@ -1,14 +1,18 @@
 package com.journal.repository;
 
 import com.journal.model.User;
-import com.journal.utils.PasswordUtil;
+import com.journal.repository.utils.PasswordUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserDao extends AbstractDao implements Dao<User> {
+
+    private static final Logger LOGGER = Logger.getLogger(UserDao.class.getName());
 
     @Override
     public Optional<User> findById(long id) {
@@ -42,7 +46,7 @@ public class UserDao extends AbstractDao implements Dao<User> {
         catch(SQLException sqe) {
             sqe.printStackTrace();
         }
-
+        LOGGER.log(Level.INFO, "User: " + user + " created.");
         return user;
     }
 
@@ -185,6 +189,7 @@ public class UserDao extends AbstractDao implements Dao<User> {
         }
 
         catch(SQLException sqe) {
+            LOGGER.log(Level.SEVERE, sqe.getMessage());
             sqe.printStackTrace();
         }
         return user;
